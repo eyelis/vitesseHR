@@ -1,6 +1,11 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
+    alias(libs.plugins.compose.compiler)
+    id("com.google.dagger.hilt.android")
+    //id("com.google.devtools.ksp")
+   // kotlin("kapt")
+    id("kotlin-kapt")
 }
 
 android {
@@ -18,6 +23,8 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
+
+
     }
 
     buildTypes {
@@ -39,15 +46,17 @@ android {
     buildFeatures {
         compose = true
     }
-    composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.1"
-    }
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
+
+    hilt {
+        enableAggregatingTask = true
+    }
 }
+
 
 dependencies {
 
@@ -66,4 +75,34 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+
+    //Room
+    implementation(libs.androidx.room.ktx)
+    //ksp(libs.androidx.room.compiler)
+    kapt(libs.androidx.room.compiler)
+
+    //dagger hilt
+    implementation(libs.hilt.android)
+    //implementation(libs.androidx.hilt.lifecycle.viewmodel)
+    //ksp(libs.hilt.android.compiler)
+    kapt(libs.hilt.android.compiler)
+
+
+    //nav
+    implementation(libs.androidx.navigation.compose)
+    implementation(libs.androidx.hilt.navigation.fragment)
+
+    implementation(libs.kotlin.reflect)
+
+    implementation(libs.androidx.material.icons.extended)
+
+    implementation(libs.kotlinx.datetime)
+
+    implementation(libs.coil.compose)
+
+
+}
+
+kapt {
+    correctErrorTypes = true
 }

@@ -1,3 +1,12 @@
 <resources>
     <string name="app_name">VitesseHR</string>
+    <string name="hint_search">Rechercher un candidat</string>
+    <string name="home_fragment_label">Candidats</string>
+    <string name="contentDescription_add">Ajouter un candidat</string>
+    <string name="add_fragment_label">Ajouter un candidat</string>
+    <string name="go_back">Retour</string>
+    <string name="action_save">Sauvegarder</string>
+    <string name="tabAll">Tous</string>
+    <string name="tabFavorites">Favoris</string>
+    <string name="icon_person_description">Nom du candidat</string>
 </resources>

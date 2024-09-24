@@ -9,7 +9,7 @@ import com.vitesse.hr.domain.usecase.UseCases
 import com.vitesse.hr.presentation.edit.event.EditEvent
 import com.vitesse.hr.presentation.edit.state.EditState
 import com.vitesse.hr.presentation.edit.validation.ValidateState
-import com.vitesse.hr.presentation.edit.validation.dateFrom
+import com.vitesse.hr.presentation.util.DateUtils.dateFrom
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -79,8 +79,6 @@ class EditViewModel @Inject constructor(
                 }
             }
         }
-
-        is EditEvent.OnBack -> TODO()
 
     }
 

@@ -9,4 +9,8 @@
     <string name="tabAll">Tous</string>
     <string name="tabFavorites">Favoris</string>
     <string name="icon_person_description">Nom du candidat</string>
+    <string name="favorite_off">Not favorite</string>
+    <string name="favorite_on">Favorite</string>
+    <string name="edit">Edit Candidate</string>
+    <string name="delete">Delete Candidate</string>
 </resources>

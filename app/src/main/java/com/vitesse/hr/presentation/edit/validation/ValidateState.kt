@@ -1,6 +1,8 @@
 package com.vitesse.hr.presentation.edit.validation
 
 import android.util.Patterns
+import com.vitesse.hr.presentation.util.DateUtils.dateFrom
+import com.vitesse.hr.presentation.util.DateUtils.now
 import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
@@ -53,7 +55,7 @@ class ValidateState<State : Any>(
                         }
 
                         is PastDate -> {
-                            val date = dateFrom(value, annotation.format)
+                            val date = dateFrom(value.toString(), annotation.format)
                             if (date == null) {
                                 errors.getOrPut(fieldName) { mutableListOf() }
                                     .add("Invalid format date")
@@ -88,26 +90,10 @@ class ValidateState<State : Any>(
         return !value.toString().all { char -> char.isDigit() }
     }
 
-
     private fun isFutureDate(value: LocalDate): Boolean {
         return value > LocalDate.now()
     }
 
-    private fun LocalDateTime.Companion.now(): LocalDateTime {
-        return Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
-    }
-
-    private fun LocalDate.Companion.now(): LocalDate {
-        return LocalDateTime.now().date
-    }
-
 }
 
-@OptIn(FormatStringsInDatetimeFormats::class)
-fun dateFrom(value: Any?, format: String): LocalDate? {
-    return try {
-        return LocalDate.parse(value.toString(), LocalDate.Format { byUnicodePattern(format) })
-    } catch (e: Exception) {
-        null
-    }
-}
+

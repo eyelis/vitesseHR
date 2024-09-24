@@ -15,6 +15,8 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.vitesse.hr.presentation.details.DetailScreen
+import com.vitesse.hr.presentation.details.DetailViewModel
 import com.vitesse.hr.presentation.edit.EditScreen
 import com.vitesse.hr.presentation.edit.EditViewModel
 import com.vitesse.hr.presentation.list.ListScreen
@@ -27,6 +29,7 @@ class MainActivity : ComponentActivity() {
 
     private val listViewModel: ListViewModel by viewModels()
     private val editViewModel: EditViewModel by viewModels()
+    private val detailViewModel: DetailViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -46,20 +49,28 @@ class MainActivity : ComponentActivity() {
                     NavHost(
                         navController = navController,
                         listViewModel = listViewModel,
-                        editViewModel = editViewModel
-
+                        editViewModel = editViewModel,
+                        detailViewModel = detailViewModel
                     )
                 }
-                   
+
             }
         }
     }
 }
 
 @Composable
-fun NavHost(navController: NavHostController,
-            listViewModel: ListViewModel,
-            editViewModel: EditViewModel) {
+fun DetailsScreen(any: Any?) {
+
+}
+
+@Composable
+fun NavHost(
+    navController: NavHostController,
+    listViewModel: ListViewModel,
+    editViewModel: EditViewModel,
+    detailViewModel: DetailViewModel
+) {
     NavHost(
         navController = navController,
         startDestination = Screen.Home.route
@@ -76,17 +87,18 @@ fun NavHost(navController: NavHostController,
                 onAddClick = {
                     navController.navigate(Screen.Edit.route)
                 },
-               viewModel = listViewModel
+                viewModel = listViewModel
             )
         }
         composable(
             route = Screen.Details.route,
             arguments = Screen.Details.navArguments
         ) {
-//            DetailsScreen(
-//                candidate = viewModel.byId(it.arguments?.getString("id") ?: ""),
-//                onBackClick = { navHostController.navigateUp() }
-//            )
+            DetailScreen(
+                it.arguments?.getString("id")?.toInt() ?: -1,
+                onBackClick = { navController.navigateUp() },
+                viewModel = detailViewModel
+            )
         }
         composable(route = Screen.Edit.route) {
             EditScreen(
@@ -97,7 +109,6 @@ fun NavHost(navController: NavHostController,
         }
     }
 }
-
 
 
 @Composable

@@ -1,6 +1,7 @@
 package com.vitesse.hr.presentation.edit
 
 import android.net.Uri
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.vitesse.hr.domain.model.Candidate
@@ -17,11 +18,17 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.datetime.Instant
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.format
+import kotlinx.datetime.toLocalDateTime
 import javax.inject.Inject
 
 @HiltViewModel
 class EditViewModel @Inject constructor(
-    private val useCases: UseCases
+    private val useCases: UseCases,
+    savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(EditState())
@@ -30,9 +37,23 @@ class EditViewModel @Inject constructor(
     private val _eventFlow = MutableSharedFlow<UiEvent>()
     val eventFlow = _eventFlow.asSharedFlow()
 
+    private var id: Int? = null
+
     //  private val _imageUri = MutableStateFlow<Uri?>(null)
     //  val _imageUri = _imageUri
 
+
+      init {
+          println("init")
+          savedStateHandle.get<String>("id")?.toInt().let { id ->
+              if (id == -1) {
+                  return@let
+              }
+              this.id = id
+
+              load(id!!)
+          }
+      }
 
     fun onEvent(event: EditEvent) = when (event) {
         is EditEvent.OnSave -> {
@@ -46,16 +67,16 @@ class EditViewModel @Inject constructor(
 
                 viewModelScope.launch {
                     try {
-
                         val value = _state.value
                         useCases.addCandidate.invoke(
                             Candidate(
+                                id = value.id,
                                 firstName = value.firstName,
                                 lastName = value.lastName,
                                 phoneNumber = value.phoneNumber,
                                 email = value.email,
                                 note = value.note,
-                                dateOfBirth = dateFrom(value.dateOfBirth, "dd/MM/yyyy")!!,
+                                dateOfBirth = value.dateOfBirth!!,
                                 expectedSalary = value.expectedSalary.toLong(),
                                 photo = value.photo,
                                 isFavorite = value.isFavorite
@@ -71,7 +92,6 @@ class EditViewModel @Inject constructor(
                     }
                 }
                 _state.update { EditState() }
-
 
             } else {
                 _state.update {
@@ -93,6 +113,53 @@ class EditViewModel @Inject constructor(
     fun updateImageUri(newUri: Uri?) {
         _state.update { it.copy(photo = newUri) }
     }
+
+    fun load(id: Int) {
+       // _state.update { EditState() }
+        if (id != -1) {
+            viewModelScope.launch {
+                useCases.getCandidate.invoke(id)?.let { candidate ->
+                    _state.update {
+                        it.copy(
+                            id = candidate.id,
+                            firstName = candidate.firstName,
+                            lastName = candidate.lastName,
+                            photo = candidate.photo,
+                            email = candidate.email,
+                            isFavorite = candidate.isFavorite,
+                            phoneNumber = candidate.phoneNumber,
+                            dateOfBirth = candidate.dateOfBirth,
+                            expectedSalary = if (candidate.expectedSalary != null) candidate.expectedSalary.toString() else "",
+                            note = candidate.note
+                        )
+                    }
+                }
+            }
+        }
+    }
+
+    fun updateDate(dateMillis: Long?) {
+        _state.update { it.copy(dateOfBirth = toLocalDate(dateMillis)) }
+        if(dateMillis != null){
+            _state.update {
+                it.copy(errors = _state.value.errors.minus("dateOfBirth"))
+            }
+        }
+    }
+
+    fun toFormattedDate(dateMillis: Long?) =
+        toLocalDate(dateMillis)?.format(LocalDate.Format {
+            dayOfMonth(); chars("/"); monthNumber(); chars("/"); year()
+        })
+
+
+    private fun toLocalDate(dateMillis: Long?) =
+        dateMillis?.let { newDate ->
+            Instant.fromEpochMilliseconds(newDate).toLocalDateTime(
+                TimeZone.currentSystemDefault()
+            ).date
+        }
+
 
     sealed class UiEvent {
         data class Error(val message: String) : UiEvent()

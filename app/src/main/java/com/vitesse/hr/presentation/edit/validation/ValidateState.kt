@@ -75,7 +75,7 @@ class ValidateState<State : Any>(
     }
 
     private fun isEmpty(value: Any?): Boolean {
-        return value.toString().isEmpty()
+        return value == null || value.toString().isEmpty()
     }
 
     private fun isNotEmail(value: Any?): Boolean {

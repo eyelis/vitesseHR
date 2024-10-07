@@ -87,6 +87,7 @@ dependencies {
     //implementation(libs.androidx.hilt.lifecycle.viewmodel)
     //ksp(libs.hilt.android.compiler)
     kapt(libs.hilt.android.compiler)
+    implementation(libs.androidx.hilt.navigation.compose)
 
 
     //nav
@@ -104,6 +105,14 @@ dependencies {
     implementation(libs.accompanist.permissions)
 
     implementation(libs.glideCompose)
+
+ //   implementation(libs.datetime)
+
+    // Retrofit
+    implementation(libs.retrofit)
+    //FIXME tech radar HOLD library
+    implementation(libs.converter.gson)
+    implementation(libs.okhttp)
 
 }
 

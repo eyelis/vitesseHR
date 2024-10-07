@@ -1,8 +1,9 @@
 package com.vitesse.hr.presentation.details
 
 import android.annotation.SuppressLint
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -43,10 +44,12 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.wear.compose.material.ContentAlpha
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
@@ -62,7 +65,8 @@ import kotlinx.coroutines.flow.collectLatest
 fun DetailScreen(
     id: Int,
     onBackClick: () -> Unit,
-    viewModel: DetailViewModel = viewModel()
+    viewModel: DetailViewModel = viewModel(),
+    onEditClick: (Int) -> Unit
 ) {
 
     val state by viewModel.state.collectAsState()
@@ -73,14 +77,17 @@ fun DetailScreen(
 
     LaunchedEffect(key1 = true) {
         viewModel.eventFlow.collectLatest { event ->
-            when(event) {
+            when (event) {
                 is DetailViewModel.UiEvent.Deleted -> {
                     onBackClick()
+                }
+
+                is DetailViewModel.UiEvent.Edit -> {
+                    onEditClick(id)
                 }
             }
         }
     }
-
 
     Scaffold(
         topBar = {
@@ -111,7 +118,8 @@ fun DetailScreen(
                         )
                     }
                     IconButton(onClick = {
-                        viewModel.onEvent(DetailEvent.Edit)
+                        // viewModel.onEvent(DetailEvent.Edit)
+                        onEditClick(state.id!!)
                     }) {
                         Icon(
                             imageVector = Icons.Outlined.Edit,
@@ -140,7 +148,7 @@ fun DetailScreen(
                 .fillMaxSize()
                 .fillMaxWidth()
                 .padding(padding)
-            ) {
+        ) {
 
             item {
                 Column(
@@ -163,11 +171,33 @@ fun DetailScreen(
                     }
 
                     Row {
-                        ContactIcon(Icons.Outlined.Call, R.string.delete)
-                        ContactIcon(Icons.AutoMirrored.Outlined.Chat, R.string.delete)
-                        ContactIcon(Icons.Outlined.Email, R.string.delete)
-                    }
+                        ContactIcon(
+                            Icons.Outlined.Call,
+                            R.string.delete,
+                            Intent(
+                                Intent.ACTION_DIAL,
+                                Uri.fromParts("tel", state.phoneNumber, null)
+                            )
+                        )
 
+                        ContactIcon(
+                            Icons.AutoMirrored.Outlined.Chat,
+                            R.string.delete,
+                            Intent(
+                                Intent.ACTION_VIEW,
+                                Uri.fromParts("sms", state.phoneNumber, null)
+                            )
+                        )
+
+                        ContactIcon(
+                            Icons.Outlined.Email,
+                            R.string.delete,
+                            Intent(Intent.ACTION_SENDTO).apply {
+                                data = Uri.parse("mailto:")
+                                putExtra(Intent.EXTRA_EMAIL, state.email)
+                            }
+                        )
+                    }
 
                     CardInfo(
                         title = "A propos"
@@ -193,14 +223,13 @@ fun DetailScreen(
                         Text(
                             //TODO Retrofit + exchange rate api.
                             modifier = Modifier.alpha(ContentAlpha.medium),
-                            text = "soit £ ${state.expectedSalary}"
+                            text = "soit £ ${state.expectedSalaryGbp}"
                         )
-
                     }
 
                     CardInfo(
                         title = "Notes",
-                        height = 270.dp
+                        height = 230.dp
                     ) {
                         Text(
                             modifier = Modifier.alpha(ContentAlpha.medium),
@@ -223,7 +252,7 @@ private fun CardInfo(
         Card(
             modifier = Modifier
                 .fillMaxWidth()
-            //   .defaultMinSize(minHeight = height)
+                //   .defaultMinSize(minHeight = height)
                 .height(height)
         ) {
             Column(
@@ -247,15 +276,23 @@ private fun CardInfo(
 @Composable
 private fun ContactIcon(
     icon: ImageVector,
-    descriptionId: Int
+    descriptionId: Int,
+    intent: Intent
 ) {
-    Icon(
+    val context = LocalContext.current
+    IconButton(
         modifier = Modifier
-            .padding(end = 20.dp)
-            // .size(50.dp)
-            .border(width = 1.dp, shape = CircleShape, color = Color.Black)
-            .padding(8.dp),
-        imageVector = icon,
-        contentDescription = stringResource(id = descriptionId)
-    )
+            .padding(end = 20.dp),
+        onClick = {
+            ContextCompat.startActivity(context, intent, null)
+        }
+    ) {
+        Icon(
+            modifier = Modifier
+                .border(width = 1.dp, shape = CircleShape, color = Color.Black)
+                .padding(8.dp),
+            imageVector = icon,
+            contentDescription = stringResource(id = descriptionId)
+        )
+    }
 }

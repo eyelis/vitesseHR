@@ -1,9 +1,10 @@
 package com.vitesse.hr.presentation.details
 
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.vitesse.hr.domain.repository.CurrencyRepository
 import com.vitesse.hr.domain.usecase.UseCases
+import com.vitesse.hr.domain.util.Resource
 import com.vitesse.hr.presentation.details.event.DetailEvent
 import com.vitesse.hr.presentation.util.DateUtils.now
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -17,11 +18,12 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.format
 import kotlinx.datetime.yearsUntil
 import javax.inject.Inject
+import kotlin.math.round
 
 @HiltViewModel
 class DetailViewModel @Inject constructor(
     private val useCases: UseCases,
-    savedStateHandle: SavedStateHandle
+    private val currencyRepository: CurrencyRepository,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(DetailState())
@@ -32,18 +34,18 @@ class DetailViewModel @Inject constructor(
 
     private var id: Int? = null
 
-    init {
-        println("init")
-        savedStateHandle.get<Int>("id")?.let { id ->
-            if (id == -1) {
-                return@let
-            }
-            this.id = id
+    /*  init {
+          println("init")
+          savedStateHandle.get<Int>("id")?.let { id ->
+              if (id == -1) {
+                  return@let
+              }
+              this.id = id
 
-            load(id)
+              load(id)
 
-        }
-    }
+          }
+      }*/
 
 
     fun onEvent(event: DetailEvent) {
@@ -57,7 +59,7 @@ class DetailViewModel @Inject constructor(
                 }
 
                 viewModelScope.launch {
-                    useCases.getCandidate.invoke(_state.value.id)?.let { candidate ->
+                    useCases.getCandidate.invoke(_state.value.id!!)?.let { candidate ->
                         useCases.addCandidate.invoke(
                             candidate
                                 .copy(isFavorite = _state.value.isFavorite)
@@ -69,7 +71,7 @@ class DetailViewModel @Inject constructor(
             is DetailEvent.Call -> TODO()
             is DetailEvent.Delete -> {
                 viewModelScope.launch {
-                    useCases.getCandidate.invoke(_state.value.id)?.let { candidate ->
+                    useCases.getCandidate.invoke(_state.value.id!!)?.let { candidate ->
                         useCases.deleteCandidate.invoke(candidate)
                     }
                     _eventFlow.emit(UiEvent.Deleted)
@@ -78,13 +80,18 @@ class DetailViewModel @Inject constructor(
             }
 
             is DetailEvent.Edit -> TODO()
-            is DetailEvent.Email -> TODO()
+            is DetailEvent.Email -> {
+
+
+            }
+
             is DetailEvent.Sms -> TODO()
         }
     }
 
     fun load(id: Int) {
         viewModelScope.launch {
+
             useCases.getCandidate.invoke(id)?.let { candidate ->
                 _state.update {
                     it.copy(
@@ -96,14 +103,40 @@ class DetailViewModel @Inject constructor(
                         isFavorite = candidate.isFavorite,
                         phoneNumber = candidate.phoneNumber,
                         dateOfBirth = candidate.dateOfBirth.format(LocalDate.Format {
-                            dayOfMonth(); chars(
-                            "/"
-                        ); monthNumber(); chars("/");year()
+                            dayOfMonth(); chars("/"); monthNumber(); chars("/"); year()
                         }),
                         expectedSalary = if (candidate.expectedSalary != null) candidate.expectedSalary.toString() else "",
                         age = candidate.dateOfBirth.yearsUntil(LocalDate.now()).toString(),
                         note = candidate.note
                     )
+                }
+                if (candidate.expectedSalary != null) {
+                    convertCurrency(candidate.expectedSalary)
+                }
+            }
+
+
+        }
+
+    }
+
+    private fun convertCurrency(amount: Long) {
+        viewModelScope.launch {
+            //FIXME Extract and move to use case
+            when (val ratesResponse = currencyRepository.getRate()) {
+                is Resource.Error -> _state.update {
+                    it.copy(expectedSalaryGbp = ratesResponse.message?:"Conversion fails")
+                }
+
+                is Resource.Success -> {
+                    //FIXME not nullable data
+                    val rates = ratesResponse.data!!.rates
+                    val rate = rates.quote
+                    val convertedCurrency = round(amount * rate * 100) / 100
+                    _state.update {
+                        it.copy(expectedSalaryGbp = convertedCurrency.toString())
+                    }
+
                 }
             }
         }
@@ -111,6 +144,7 @@ class DetailViewModel @Inject constructor(
 
     sealed class UiEvent {
         data object Deleted : UiEvent()
+        data object Edit : UiEvent()
     }
 
 }

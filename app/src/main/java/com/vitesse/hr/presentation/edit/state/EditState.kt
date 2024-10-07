@@ -4,10 +4,12 @@ import android.net.Uri
 import com.vitesse.hr.presentation.edit.validation.Digits
 import com.vitesse.hr.presentation.edit.validation.Email
 import com.vitesse.hr.presentation.edit.validation.Mandatory
-import com.vitesse.hr.presentation.edit.validation.PastDate
 import com.vitesse.hr.presentation.edit.validation.Phone
+import kotlinx.datetime.LocalDate
 
 data class EditState(
+
+    val id: Int? = null,
 
     @Mandatory
     val firstName: String = "",
@@ -24,8 +26,7 @@ data class EditState(
     val email: String = "",
 
     @Mandatory
-    @PastDate(format = "dd/MM/yyyy")
-    val dateOfBirth: String = "",
+    val dateOfBirth: LocalDate? = null,
 
     @Digits
     val expectedSalary: String = "",

@@ -4,7 +4,7 @@ import android.net.Uri
 
 data class DetailState(
 
-    val id: Int = -1,
+    val id: Int? = null,
 
     val firstName: String = "",
 
@@ -19,6 +19,8 @@ data class DetailState(
     val age: String = "",
 
     val expectedSalary: String = "",
+
+    val expectedSalaryGbp: String = "",
 
     val note: String = "",
 

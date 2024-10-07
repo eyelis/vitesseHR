@@ -1,10 +1,12 @@
 package com.vitesse.hr.presentation
 
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
+import androidx.annotation.RequiresApi
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -28,9 +30,10 @@ import dagger.hilt.android.AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
     private val listViewModel: ListViewModel by viewModels()
-    private val editViewModel: EditViewModel by viewModels()
+   // private val editViewModel: EditViewModel by viewModels()
     private val detailViewModel: DetailViewModel by viewModels()
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -49,7 +52,7 @@ class MainActivity : ComponentActivity() {
                     NavHost(
                         navController = navController,
                         listViewModel = listViewModel,
-                        editViewModel = editViewModel,
+                    //    editViewModel = editViewModel,
                         detailViewModel = detailViewModel
                     )
                 }
@@ -59,16 +62,12 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-@Composable
-fun DetailsScreen(any: Any?) {
-
-}
-
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun NavHost(
     navController: NavHostController,
     listViewModel: ListViewModel,
-    editViewModel: EditViewModel,
+  //  editViewModel: EditViewModel,
     detailViewModel: DetailViewModel
 ) {
     NavHost(
@@ -85,7 +84,11 @@ fun NavHost(
                     )
                 },
                 onAddClick = {
-                    navController.navigate(Screen.Edit.route)
+                    navController.navigate(
+                        Screen.Edit.createRoute(
+                            id = "-1"
+                        )
+                    )
                 },
                 viewModel = listViewModel
             )
@@ -95,16 +98,27 @@ fun NavHost(
             arguments = Screen.Details.navArguments
         ) {
             DetailScreen(
-                it.arguments?.getString("id")?.toInt() ?: -1,
+                id = it.arguments?.getString("id")?.toInt() ?: -1,
                 onBackClick = { navController.navigateUp() },
+                onEditClick = { id ->
+                    navController.navigate(
+                        Screen.Edit.createRoute(
+                            id = id.toString()
+                        )
+                    )
+                },
                 viewModel = detailViewModel
             )
         }
-        composable(route = Screen.Edit.route) {
+        composable(
+            route = Screen.Edit.route,
+            arguments = Screen.Edit.navArguments
+        ) {
             EditScreen(
+                id = it.arguments?.getString("id")?.toInt() ?: -1,
                 onBackClick = { navController.navigateUp() },
-                onSaveClick = { navController.navigateUp() },
-                viewModel = editViewModel
+                onSaveClick = { navController.navigate(Screen.Home.route) },
+                //viewModel = editViewModel
             )
         }
     }

@@ -9,7 +9,7 @@ import kotlinx.datetime.LocalDate
 @Entity
 data class Candidate(
     @PrimaryKey(autoGenerate = true)
-    val id: Int = 0,
+    val id: Int? = null,
     val firstName: String,
     val lastName: String,
     val phoneNumber: String,

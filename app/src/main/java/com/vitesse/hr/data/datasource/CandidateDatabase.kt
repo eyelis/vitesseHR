@@ -8,7 +8,7 @@ import com.vitesse.hr.domain.model.Candidate
 
 @Database(
     entities = [Candidate::class],
-    version = 4,
+    version = 5,
     exportSchema = false
 )
 @TypeConverters(Converters::class)

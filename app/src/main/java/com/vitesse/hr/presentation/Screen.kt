@@ -20,7 +20,7 @@ sealed class Screen(
     }
 
     data object Edit : Screen(
-            route = "edit/{id}",
+        route = "edit/{id}",
         navArguments = listOf(navArgument("id") {
             type = NavType.StringType
         })

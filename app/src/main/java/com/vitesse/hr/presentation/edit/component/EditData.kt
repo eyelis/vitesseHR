@@ -1,76 +1,93 @@
 package com.vitesse.hr.presentation.edit.component
 
-import android.net.Uri
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.PickVisualMediaRequest
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.clickable
+import android.annotation.SuppressLint
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.AttachMoney
+import androidx.compose.material.icons.outlined.Cake
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.outlined.Email
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material.icons.outlined.Phone
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDefaults
+import androidx.compose.material3.DisplayMode
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.focusModifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import coil.compose.AsyncImage
 import com.vitesse.hr.R
 import com.vitesse.hr.presentation.edit.EditViewModel
+import com.vitesse.hr.presentation.edit.state.EditState
+import com.vitesse.hr.presentation.util.PastOrPresentSelectableDates
+import kotlinx.datetime.Clock
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.atStartOfDayIn
+import kotlinx.datetime.toJavaLocalDate
+import java.util.Locale
 
 //FIXME pass state instead of viewmodel
+@RequiresApi(Build.VERSION_CODES.O)
+@SuppressLint("RememberReturnType")
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EditData(
-    viewModel: EditViewModel,
-    modifier: Modifier = Modifier
+    viewModel: EditViewModel, modifier: Modifier = Modifier
 ) {
     val state by viewModel.state.collectAsState()
 
-    EditPhoto(
-        viewModel = viewModel,
-        modifier = modifier
+    //TODO PUT IN VIEWMODEL
+    val datePickerState = rememberDatePickerState(
+        initialDisplayMode = DisplayMode.Input,
+        selectableDates = PastOrPresentSelectableDates,
+        initialSelectedDateMillis = state
+            .dateOfBirth
+            ?.atStartOfDayIn(TimeZone.UTC)
+            ?.toEpochMilliseconds()
+
+        //   initialSelectedDateMillis =  state.dateOfBirth?.toJavaLocalDate()?.toEpochDay()?.times(86400 * 1000)
     )
 
-    EditField(
-        viewModel = viewModel,
+    LaunchedEffect(datePickerState.selectedDateMillis) {
+        viewModel.updateDate(datePickerState.selectedDateMillis)
+    }
+
+    EditPhoto(
+        viewModel = viewModel, modifier = modifier
+    )
+
+    EditField(viewModel = viewModel,
         modifier = modifier,
         name = "firstName",
         label = "First Name",
         value = state.firstName,
         icon = Icons.Outlined.Person,
-        onValueChanged = { viewModel.updateProperty(state.copy(firstName = it)) }
-    )
+        onValueChanged = { viewModel.updateProperty(state.copy(firstName = it)) })
 
-    EditField(
-        viewModel = viewModel,
+    EditField(viewModel = viewModel,
         modifier = modifier,
         name = "lastName",
         label = "Last Name",
         value = state.lastName,
         icon = null,
-        onValueChanged = { viewModel.updateProperty(state.copy(lastName = it)) }
-    )
+        onValueChanged = { viewModel.updateProperty(state.copy(lastName = it)) })
 
     EditField(
         viewModel = viewModel,
@@ -94,15 +111,45 @@ fun EditData(
         type = KeyboardType.Email
     )
 
-    EditField(
-        viewModel = viewModel,
-        modifier = modifier,
-        name = "dateOfBirth",
-        label = "Date",
-        value = state.dateOfBirth,
-        icon = null,
-        onValueChanged = { viewModel.updateProperty(state.copy(dateOfBirth = it)) }
-    )
+    Row(
+        modifier = Modifier.padding(20.dp)
+    ) {
+        Icon(
+            modifier = Modifier.padding(top = 5.dp, end = 10.dp),
+            imageVector = Icons.Outlined.Cake,
+            contentDescription = stringResource(id = R.string.icon_person_description)
+        )
+
+        DatePicker(
+
+            state = datePickerState,
+            showModeToggle = true,
+            title = {
+                Text(
+                    modifier = Modifier
+                        .padding(start = 24.dp, end = 12.dp, top = 16.dp),
+                    text = "Sélectionner une date"
+                )
+            },
+            headline = {
+                Text(
+                    modifier = Modifier
+                        .padding(start = 24.dp, end = 12.dp, bottom = 12.dp),
+                    text = DatePickerDefaults.dateFormatter().formatDate(
+                        datePickerState.selectedDateMillis,
+                        LocalConfiguration.current.locales[0]
+                    )
+                        ?: "Entrer une date",
+
+                    color = if (viewModel.isError("dateOfBirth")) MaterialTheme.colorScheme.error else Color.Unspecified
+                )
+            },
+
+            dateFormatter = DatePickerDefaults.dateFormatter(),
+
+            )
+
+    }
 
     EditField(
         viewModel = viewModel,
@@ -115,14 +162,13 @@ fun EditData(
         type = KeyboardType.Number
     )
 
-    EditField(
-        viewModel = viewModel,
+    EditField(viewModel = viewModel,
         modifier = modifier,
         name = "note",
         label = "Note",
         value = state.note,
         icon = Icons.Outlined.Edit,
         lines = 5,
-        onValueChanged = { viewModel.updateProperty(state.copy(note = it)) }
-    )
+        onValueChanged = { viewModel.updateProperty(state.copy(note = it)) })
 }
+

@@ -11,6 +11,7 @@ import com.vitesse.hr.domain.repository.CurrencyRepository
 import com.vitesse.hr.domain.usecase.AddCandidate
 import com.vitesse.hr.domain.usecase.DeleteCandidate
 import com.vitesse.hr.domain.usecase.GetCandidate
+import com.vitesse.hr.domain.usecase.GetCurrency
 import com.vitesse.hr.domain.usecase.ListAll
 import com.vitesse.hr.domain.usecase.ListFavorites
 import com.vitesse.hr.domain.usecase.UseCases
@@ -59,11 +60,15 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun listUseCases(repository: CandidateRepository) = UseCases(
+    fun listUseCases(
+        repository: CandidateRepository,
+        currencyRepository: CurrencyRepository
+    ) = UseCases(
         getCandidates = ListAll(repository),
         getFavorites = ListFavorites(repository),
         getCandidate = GetCandidate(repository),
         addCandidate = AddCandidate(repository),
-        deleteCandidate = DeleteCandidate(repository)
+        deleteCandidate = DeleteCandidate(repository),
+        getCurrency = GetCurrency(currencyRepository)
     )
 }

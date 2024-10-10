@@ -112,11 +112,12 @@ fun EditScreen(
                 .padding(padding)
         ) {
 
-            //FIXME Check if loading
-            EditData(
-                viewModel = viewModel,
-                modifier = Modifier.fillMaxWidth()
-            )
+            if(id == -1 || !state.isLoading) {
+                EditData(
+                    viewModel = viewModel,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
 
         }
     }

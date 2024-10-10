@@ -5,5 +5,6 @@ data class UseCases(
     val getFavorites: ListFavorites,
     val getCandidate: GetCandidate,
     val addCandidate: AddCandidate,
-    val deleteCandidate: DeleteCandidate
+    val deleteCandidate: DeleteCandidate,
+    val getCurrency: GetCurrency
 )

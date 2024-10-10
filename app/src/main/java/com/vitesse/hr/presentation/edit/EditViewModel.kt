@@ -52,6 +52,7 @@ class EditViewModel @Inject constructor(
               this.id = id
 
               load(id!!)
+
           }
       }
 
@@ -114,8 +115,7 @@ class EditViewModel @Inject constructor(
         _state.update { it.copy(photo = newUri) }
     }
 
-    fun load(id: Int) {
-       // _state.update { EditState() }
+    private fun load(id: Int) {
         if (id != -1) {
             viewModelScope.launch {
                 useCases.getCandidate.invoke(id)?.let { candidate ->
@@ -130,7 +130,8 @@ class EditViewModel @Inject constructor(
                             phoneNumber = candidate.phoneNumber,
                             dateOfBirth = candidate.dateOfBirth,
                             expectedSalary = if (candidate.expectedSalary != null) candidate.expectedSalary.toString() else "",
-                            note = candidate.note
+                            note = candidate.note,
+                            isLoading = false
                         )
                     }
                 }

@@ -24,20 +24,27 @@ import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.outlined.Email
 import androidx.compose.material.icons.outlined.StarOutline
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -50,6 +57,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.wear.compose.material.ContentAlpha
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
@@ -65,13 +73,27 @@ import kotlinx.coroutines.flow.collectLatest
 fun DetailScreen(
     id: Int,
     onBackClick: () -> Unit,
-    viewModel: DetailViewModel = viewModel(),
+    viewModel: DetailViewModel = hiltViewModel(),
     onEditClick: (Int) -> Unit
 ) {
 
     val state by viewModel.state.collectAsState()
 
-    viewModel.load(id)
+    var showDeleteConfirm by remember { mutableStateOf(false) }
+
+    if (showDeleteConfirm) {
+        ConfirmDialog(
+            title = "Suppression",
+            content = "Êtes-vous sûr de vouloir supprimer ce candidat ? Cette action est irréversible.",
+            onDismiss = { showDeleteConfirm = false },
+            onConfirm = {
+                showDeleteConfirm = false
+                viewModel.onEvent(DetailEvent.Delete)
+            }
+        )
+    }
+
+    // viewModel.load(id)
 
     val snackBarHostState = remember { SnackbarHostState() }
 
@@ -127,7 +149,8 @@ fun DetailScreen(
                         )
                     }
                     IconButton(onClick = {
-                        viewModel.onEvent(DetailEvent.Delete)
+                        showDeleteConfirm = true
+
                     }) {
                         Icon(
                             imageVector = Icons.Outlined.Delete,
@@ -253,7 +276,10 @@ private fun CardInfo(
             modifier = Modifier
                 .fillMaxWidth()
                 //   .defaultMinSize(minHeight = height)
-                .height(height)
+                .height(height),
+            //colors = CardDefaults.cardColors(
+            //    containerColor = MaterialTheme.colorScheme.surfaceVariant,
+            //)
         ) {
             Column(
                 modifier = Modifier
@@ -295,4 +321,30 @@ private fun ContactIcon(
             contentDescription = stringResource(id = descriptionId)
         )
     }
+}
+
+@Composable
+fun ConfirmDialog(
+    title: String,
+    content: String,
+    onDismiss: () -> Unit,
+    onConfirm: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = {
+            onDismiss()
+        },
+        title = { Text(title) },
+        text = { Text(content) },
+        dismissButton = {
+            TextButton(onClick = { onDismiss() }) {
+                Text("Annuler")
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = { onConfirm() }) {
+                Text("Confirmer")
+            }
+        }
+    )
 }

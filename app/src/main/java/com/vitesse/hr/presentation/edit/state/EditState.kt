@@ -37,5 +37,7 @@ data class EditState(
 
     val photo: Uri? = null,
 
-    val errors: Map<String, MutableList<String>> = emptyMap()
+    val errors: Map<String, MutableList<String>> = emptyMap(),
+
+    val isLoading: Boolean = true
 )

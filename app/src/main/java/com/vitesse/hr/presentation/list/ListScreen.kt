@@ -16,6 +16,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.vitesse.hr.R
 import com.vitesse.hr.domain.model.Candidate
 import com.vitesse.hr.presentation.list.component.SearchBar
@@ -26,7 +27,7 @@ import com.vitesse.hr.presentation.list.component.TabBar
 fun ListScreen(
     onCandidateClick: (Candidate) -> Unit = {},
     onAddClick: () -> Unit = {},
-    viewModel: ListViewModel
+    viewModel: ListViewModel = hiltViewModel()
 ) {
 
 

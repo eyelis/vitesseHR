@@ -49,11 +49,11 @@ import java.util.Locale
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EditData(
-    viewModel: EditViewModel, modifier: Modifier = Modifier
+    viewModel: EditViewModel,
+    modifier: Modifier = Modifier
 ) {
     val state by viewModel.state.collectAsState()
 
-    //TODO PUT IN VIEWMODEL
     val datePickerState = rememberDatePickerState(
         initialDisplayMode = DisplayMode.Input,
         selectableDates = PastOrPresentSelectableDates,
@@ -61,8 +61,6 @@ fun EditData(
             .dateOfBirth
             ?.atStartOfDayIn(TimeZone.UTC)
             ?.toEpochMilliseconds()
-
-        //   initialSelectedDateMillis =  state.dateOfBirth?.toJavaLocalDate()?.toEpochDay()?.times(86400 * 1000)
     )
 
     LaunchedEffect(datePickerState.selectedDateMillis) {
@@ -121,7 +119,6 @@ fun EditData(
         )
 
         DatePicker(
-
             state = datePickerState,
             showModeToggle = true,
             title = {
@@ -148,7 +145,6 @@ fun EditData(
             dateFormatter = DatePickerDefaults.dateFormatter(),
 
             )
-
     }
 
     EditField(
@@ -169,6 +165,7 @@ fun EditData(
         value = state.note,
         icon = Icons.Outlined.Edit,
         lines = 5,
-        onValueChanged = { viewModel.updateProperty(state.copy(note = it)) })
+        onValueChanged = { viewModel.updateProperty(state.copy(note = it)) }
+    )
 }
 

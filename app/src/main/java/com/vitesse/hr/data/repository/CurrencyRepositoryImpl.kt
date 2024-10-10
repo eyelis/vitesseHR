@@ -17,10 +17,10 @@ class CurrencyRepositoryImpl @Inject constructor(
             if (response.isSuccessful && result != null) {
                 Resource.Success(result)
             } else {
-                Resource.Error("Conversion fails. Code : " + response.code() + " / " +  " Message : " + response.message())
+                Resource.Error("Error getting currency rate. Code : " + response.code() + " / " +  " Message : " + response.message())
             }
         } catch (e: Exception) {
-            Resource.Error(e.message ?: "An error occurred")
+            Resource.Error(e.message ?: "Unexpected error getting currency rate")
         }
     }
 }

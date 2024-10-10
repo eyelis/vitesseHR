@@ -1,8 +1,8 @@
 package com.vitesse.hr.presentation.details
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.vitesse.hr.domain.repository.CurrencyRepository
 import com.vitesse.hr.domain.usecase.UseCases
 import com.vitesse.hr.domain.util.Resource
 import com.vitesse.hr.presentation.details.event.DetailEvent
@@ -18,12 +18,11 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.format
 import kotlinx.datetime.yearsUntil
 import javax.inject.Inject
-import kotlin.math.round
 
 @HiltViewModel
 class DetailViewModel @Inject constructor(
     private val useCases: UseCases,
-    private val currencyRepository: CurrencyRepository,
+    savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(DetailState())
@@ -34,19 +33,18 @@ class DetailViewModel @Inject constructor(
 
     private var id: Int? = null
 
-    /*  init {
-          println("init")
-          savedStateHandle.get<Int>("id")?.let { id ->
-              if (id == -1) {
-                  return@let
-              }
-              this.id = id
+    init {
+        println("init")
+        savedStateHandle.get<String>("id")?.toInt().let { id ->
+            if (id == -1) {
+                return@let
+            }
+            this.id = id
 
-              load(id)
+            load(id!!)
 
-          }
-      }*/
-
+        }
+    }
 
     fun onEvent(event: DetailEvent) {
 
@@ -89,9 +87,8 @@ class DetailViewModel @Inject constructor(
         }
     }
 
-    fun load(id: Int) {
+    private fun load(id: Int) {
         viewModelScope.launch {
-
             useCases.getCandidate.invoke(id)?.let { candidate ->
                 _state.update {
                     it.copy(
@@ -114,29 +111,19 @@ class DetailViewModel @Inject constructor(
                     convertCurrency(candidate.expectedSalary)
                 }
             }
-
-
         }
-
     }
 
     private fun convertCurrency(amount: Long) {
         viewModelScope.launch {
-            //FIXME Extract and move to use case
-            when (val ratesResponse = currencyRepository.getRate()) {
-                is Resource.Error -> _state.update {
-                    it.copy(expectedSalaryGbp = ratesResponse.message?:"Conversion fails")
+            when (val rate  = useCases.getCurrency.invoke(amount)) {
+                is Resource.Error-> _state.update {
+                    it.copy(expectedSalaryGbp = rate.message!!)
                 }
-
                 is Resource.Success -> {
-                    //FIXME not nullable data
-                    val rates = ratesResponse.data!!.rates
-                    val rate = rates.quote
-                    val convertedCurrency = round(amount * rate * 100) / 100
                     _state.update {
-                        it.copy(expectedSalaryGbp = convertedCurrency.toString())
+                        it.copy(expectedSalaryGbp = rate.data!!.toString())
                     }
-
                 }
             }
         }

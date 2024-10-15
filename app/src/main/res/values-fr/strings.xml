@@ -38,4 +38,5 @@
     <string name="detail_birthday">Anniversaire</string>
     <string name="field_photo_label">Photo candidat</string>
     <string name="detail_salary_title">Prétentions salariales</string>
+    <string name="no_candidate">Aucun candidat</string>
 </resources>

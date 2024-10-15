@@ -16,6 +16,8 @@ import com.vitesse.hr.domain.usecase.ListAll
 import com.vitesse.hr.domain.usecase.ListFavorites
 import com.vitesse.hr.domain.usecase.UseCases
 import com.vitesse.hr.presentation.AppDispatchers
+import com.vitesse.hr.presentation.edit.state.EditState
+import com.vitesse.hr.presentation.validation.ValidateState
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -62,6 +64,10 @@ object AppModule {
     @Provides
     @Singleton
     fun appDispatchers(): AppDispatchers = AppDispatchers()
+
+    @Provides
+    @Singleton
+    fun validateState(): ValidateState<EditState> = ValidateState(EditState::class)
 
     @Provides
     @Singleton

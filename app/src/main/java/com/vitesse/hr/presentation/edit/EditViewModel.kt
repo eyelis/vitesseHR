@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.vitesse.hr.domain.model.Candidate
 import com.vitesse.hr.domain.model.InvalidCandidateException
 import com.vitesse.hr.domain.usecase.UseCases
+import com.vitesse.hr.presentation.AppDispatchers
 import com.vitesse.hr.presentation.edit.event.EditEvent
 import com.vitesse.hr.presentation.edit.state.EditState
 import com.vitesse.hr.presentation.validation.ValidateState
@@ -17,6 +18,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
@@ -27,7 +29,9 @@ import javax.inject.Inject
 @HiltViewModel
 class EditViewModel @Inject constructor(
     private val useCases: UseCases,
-    savedStateHandle: SavedStateHandle
+    private val savedStateHandle: SavedStateHandle,
+    private val stateValidator: ValidateState<EditState>,
+    private val appDispatchers: AppDispatchers
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(EditState())
@@ -39,21 +43,12 @@ class EditViewModel @Inject constructor(
     private var id: Int? = null
 
     init {
-        println("init")
-        savedStateHandle.get<String>("id")?.toInt().let { id ->
-            if (id == -1) {
-                return@let
-            }
-            this.id = id
-
-            load(id!!)
-
-        }
+        load()
     }
 
     fun onEvent(event: EditEvent) = when (event) {
         is EditEvent.OnSave -> {
-            val stateValidator = ValidateState(EditState::class)
+            //  val stateValidator = ValidateState(EditState::class)
             val errors = stateValidator.validate(state.value)
 
             if (errors.isEmpty()) {
@@ -64,20 +59,22 @@ class EditViewModel @Inject constructor(
                 viewModelScope.launch {
                     try {
                         val value = _state.value
-                        useCases.addCandidate.invoke(
-                            Candidate(
-                                id = value.id,
-                                firstName = value.firstName,
-                                lastName = value.lastName,
-                                phoneNumber = value.phoneNumber,
-                                email = value.email,
-                                note = value.note,
-                                dateOfBirth = value.dateOfBirth!!,
-                                expectedSalary = value.expectedSalary.toLong(),
-                                photo = value.photo,
-                                isFavorite = value.isFavorite
+                        withContext(appDispatchers.IO) {
+                            useCases.addCandidate.invoke(
+                                Candidate(
+                                    id = value.id,
+                                    firstName = value.firstName,
+                                    lastName = value.lastName,
+                                    phoneNumber = value.phoneNumber,
+                                    email = value.email,
+                                    note = value.note,
+                                    dateOfBirth = value.dateOfBirth!!,
+                                    expectedSalary = value.expectedSalary.toLongOrNull(),
+                                    photo = value.photo,
+                                    isFavorite = value.isFavorite
+                                )
                             )
-                        )
+                        }
                         _eventFlow.emit(UiEvent.Saved)
                     } catch (e: InvalidCandidateException) {
                         _eventFlow.emit(
@@ -110,29 +107,37 @@ class EditViewModel @Inject constructor(
         _state.update { it.copy(photo = newUri) }
     }
 
-    private fun load(id: Int) {
-        if (id != -1) {
-            viewModelScope.launch {
-                useCases.getCandidate.invoke(id)?.let { candidate ->
-                    _state.update {
-                        it.copy(
-                            id = candidate.id,
-                            firstName = candidate.firstName,
-                            lastName = candidate.lastName,
-                            photo = candidate.photo,
-                            email = candidate.email,
-                            isFavorite = candidate.isFavorite,
-                            phoneNumber = candidate.phoneNumber,
-                            dateOfBirth = candidate.dateOfBirth,
-                            expectedSalary = if (candidate.expectedSalary != null) candidate.expectedSalary.toString() else "",
-                            note = candidate.note,
-                            isLoading = false
-                        )
-                    }
+    private fun load() {
+        viewModelScope.launch {
+            savedStateHandle.get<String>("id")?.toInt().let { id ->
+                if (id == -1) {
+                    return@let
                 }
+
+                val candidate = withContext(appDispatchers.IO) {
+                    useCases.getCandidate.invoke(id!!)
+                }
+
+                _state.update {
+                    it.copy(
+                        id = candidate!!.id,
+                        firstName = candidate.firstName,
+                        lastName = candidate.lastName,
+                        photo = candidate.photo,
+                        email = candidate.email,
+                        isFavorite = candidate.isFavorite,
+                        phoneNumber = candidate.phoneNumber,
+                        dateOfBirth = candidate.dateOfBirth,
+                        expectedSalary = if (candidate.expectedSalary != null) candidate.expectedSalary.toString() else "",
+                        note = candidate.note,
+                        isLoading = false
+                    )
+                }
+
             }
         }
     }
+
 
     fun updateDate(dateMillis: Long?) {
         _state.update { it.copy(dateOfBirth = toLocalDate(dateMillis)) }

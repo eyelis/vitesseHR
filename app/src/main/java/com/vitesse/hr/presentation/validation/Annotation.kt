@@ -1,4 +1,4 @@
-package com.vitesse.hr.presentation.edit.validation
+package com.vitesse.hr.presentation.validation
 
 @Target( AnnotationTarget.PROPERTY)
 annotation class Mandatory()

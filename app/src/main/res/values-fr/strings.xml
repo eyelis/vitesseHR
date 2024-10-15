@@ -1,4 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">VitesseHR</string>
+    <string name="search_label">Rechercher un candidat</string>
+    <string name="home_fragment_label">Candidats</string>
+    <string name="content_description_add">Ajouter un candidat</string>
+    <string name="action_add">Ajouter un candidat</string>
+    <string name="action_back">Retour</string>
+    <string name="action_save">Sauvegarder</string>
+    <string name="tab_all_label">Tous</string>
+    <string name="tab_favorites_label">Favoris</string>
+    <string name="icon_person_description">Nom du candidat</string>
+    <string name="action_favorite_off">Favorites</string>
+    <string name="action_favorite_on">Favorites</string>
+    <string name="action_edit">Editer</string>
+    <string name="action_delete">Delete</string>
+    <string name="confirm_delete">Confirmer</string>
+    <string name="cancel_delete">Annuler</string>
+    <string name="delete_dialog_title">Suppression</string>
+    <string name="delete_dialog_message">Êtes-vous sûr de vouloir supprimer ce candidat? Cette action est irréversible.</string>
+    <string name="field_date_label">Sélectionner une date</string>
+    <string name="field_date_enter">Entrer une date</string>
+    <string name="field_expect_salary_label">Prétentions salariales</string>
+    <string name="field_email_label">Email</string>
+    <string name="field_first_name_label">Prénom</string>
+    <string name="field_last_name_label">Nom</string>
+    <string name="field_phone_label">Téléphone</string>
+    <string name="field_note_label">Notes</string>
+    <string name="validation_mandatory">Champ obligatoire</string>
+    <string name="validation_invalid_format">Format invalide</string>
+    <string name="action_call">Appel</string>
+    <string name="action_sms">SMS</string>
+    <string name="action_email">E-mail</string>
+    <string name="detail_age_label">ans</string>
+    <string name="detail_about_label">A propos</string>
+    <string name="detail_salary_gbp_label">"soit £ "</string>
+    <string name="detail_salary_eur_label">€</string>
+    <string name="detail_birthday">Anniversaire</string>
+    <string name="field_photo_label">Photo candidat</string>
+    <string name="detail_salary_title">Prétentions salariales</string>
 </resources>

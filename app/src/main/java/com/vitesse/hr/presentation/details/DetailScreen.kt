@@ -3,6 +3,7 @@ package com.vitesse.hr.presentation.details
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.net.Uri
+import android.text.format.DateFormat
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -25,7 +26,6 @@ import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.outlined.Email
 import androidx.compose.material.icons.outlined.StarOutline
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -58,7 +58,6 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.wear.compose.material.ContentAlpha
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
@@ -83,8 +82,8 @@ fun DetailScreen(
 
     if (showDeleteConfirm) {
         ConfirmDialog(
-            title = "Suppression",
-            content = "Êtes-vous sûr de vouloir supprimer ce candidat ? Cette action est irréversible.",
+            title = stringResource(id = R.string.delete_dialog_title),
+            content = stringResource(id = R.string.delete_dialog_message),
             onDismiss = { showDeleteConfirm = false },
             onConfirm = {
                 showDeleteConfirm = false
@@ -92,8 +91,6 @@ fun DetailScreen(
             }
         )
     }
-
-    // viewModel.load(id)
 
     val snackBarHostState = remember { SnackbarHostState() }
 
@@ -126,7 +123,7 @@ fun DetailScreen(
                     }) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = stringResource(id = R.string.go_back)
+                            contentDescription = stringResource(id = R.string.action_back)
                         )
                     }
                 },
@@ -136,16 +133,15 @@ fun DetailScreen(
                     }) {
                         Icon(
                             imageVector = if (state.isFavorite) Icons.Filled.Star else Icons.Outlined.StarOutline,
-                            contentDescription = stringResource(id = if (state.isFavorite) R.string.favorite_on else R.string.favorite_off)
+                            contentDescription = stringResource(id = if (state.isFavorite) R.string.action_favorite_on else R.string.action_favorite_off)
                         )
                     }
                     IconButton(onClick = {
-                        // viewModel.onEvent(DetailEvent.Edit)
                         onEditClick(state.id!!)
                     }) {
                         Icon(
                             imageVector = Icons.Outlined.Edit,
-                            contentDescription = stringResource(id = R.string.edit)
+                            contentDescription = stringResource(id = R.string.action_edit)
                         )
                     }
                     IconButton(onClick = {
@@ -154,7 +150,7 @@ fun DetailScreen(
                     }) {
                         Icon(
                             imageVector = Icons.Outlined.Delete,
-                            contentDescription = stringResource(id = R.string.delete)
+                            contentDescription = stringResource(id = R.string.action_delete)
                         )
                     }
                 }
@@ -196,7 +192,7 @@ fun DetailScreen(
                     Row {
                         ContactIcon(
                             Icons.Outlined.Call,
-                            R.string.delete,
+                            R.string.action_delete,
                             Intent(
                                 Intent.ACTION_DIAL,
                                 Uri.fromParts("tel", state.phoneNumber, null)
@@ -205,7 +201,7 @@ fun DetailScreen(
 
                         ContactIcon(
                             Icons.AutoMirrored.Outlined.Chat,
-                            R.string.delete,
+                            R.string.action_delete,
                             Intent(
                                 Intent.ACTION_VIEW,
                                 Uri.fromParts("sms", state.phoneNumber, null)
@@ -214,7 +210,7 @@ fun DetailScreen(
 
                         ContactIcon(
                             Icons.Outlined.Email,
-                            R.string.delete,
+                            R.string.action_delete,
                             Intent(Intent.ACTION_SENDTO).apply {
                                 data = Uri.parse("mailto:")
                                 putExtra(Intent.EXTRA_EMAIL, state.email)
@@ -223,30 +219,29 @@ fun DetailScreen(
                     }
 
                     CardInfo(
-                        title = "A propos"
+                        title = stringResource(id = R.string.detail_about_label)
                     ) {
                         Column {
                             Text(
-                                text = "${state.dateOfBirth} (${state.age} ans)"
+                                text = "${state.dateOfBirth} (${state.age} ${stringResource(id = R.string.detail_age_label)})"
                             )
                             Text(
                                 modifier = Modifier.alpha(ContentAlpha.medium),
-                                text = "Anniversaire"
+                                text = stringResource(id = R.string.detail_birthday)
                             )
                         }
                     }
 
                     CardInfo(
-                        title = "Pretentions salariales"
+                        title = stringResource(id = R.string.detail_salary_title)
                     ) {
 
                         Text(
-                            text = "${state.expectedSalary} €"
+                            text = "${state.expectedSalary} ${stringResource(id = R.string.detail_salary_eur_label)}"
                         )
                         Text(
-                            //TODO Retrofit + exchange rate api.
                             modifier = Modifier.alpha(ContentAlpha.medium),
-                            text = "soit £ ${state.expectedSalaryGbp}"
+                            text = "${stringResource(id = R.string.detail_salary_gbp_label)} ${state.expectedSalaryGbp}"
                         )
                     }
 
@@ -275,11 +270,7 @@ private fun CardInfo(
         Card(
             modifier = Modifier
                 .fillMaxWidth()
-                //   .defaultMinSize(minHeight = height)
-                .height(height),
-            //colors = CardDefaults.cardColors(
-            //    containerColor = MaterialTheme.colorScheme.surfaceVariant,
-            //)
+                .height(height)
         ) {
             Column(
                 modifier = Modifier
@@ -338,12 +329,12 @@ fun ConfirmDialog(
         text = { Text(content) },
         dismissButton = {
             TextButton(onClick = { onDismiss() }) {
-                Text("Annuler")
+                Text(stringResource(id = R.string.cancel_delete))
             }
         },
         confirmButton = {
             TextButton(onClick = { onConfirm() }) {
-                Text("Confirmer")
+                Text(stringResource(id = R.string.confirm_delete))
             }
         }
     )

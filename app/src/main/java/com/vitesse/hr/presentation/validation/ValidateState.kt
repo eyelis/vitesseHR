@@ -1,56 +1,54 @@
-package com.vitesse.hr.presentation.edit.validation
+package com.vitesse.hr.presentation.validation
 
 import android.util.Patterns
+import com.vitesse.hr.R
 import com.vitesse.hr.presentation.util.DateUtils.dateFrom
 import com.vitesse.hr.presentation.util.DateUtils.now
-import kotlinx.datetime.Clock
+import com.vitesse.hr.presentation.util.UiString
 import kotlinx.datetime.LocalDate
-import kotlinx.datetime.LocalDateTime
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.format.FormatStringsInDatetimeFormats
-import kotlinx.datetime.format.byUnicodePattern
-import kotlinx.datetime.toLocalDateTime
 import kotlin.reflect.KClass
 import kotlin.reflect.full.memberProperties
 
-class ValidateState<State : Any>(
-    private val kClass: KClass<State>
+class ValidateState<T : Any>(
+    private val kClass: KClass<T>
 ) {
-    fun validate(state: State): Map<String, MutableList<String>> {
-        val errors = mutableMapOf<String, MutableList<String>>()
+    fun validate(entity: T): Map<String, MutableList<UiString>> {
+        val errors = mutableMapOf<String, MutableList<UiString>>()
 
         kClass.memberProperties.forEach { field ->
             if (field.annotations.isEmpty())
                 return@forEach
 
-            val value = field.get(state)
+            val value = field.get(entity)
             val fieldName = field.name
 
             field.annotations.forEach { annotation ->
                 if (isEmpty(value)) {
                     if (annotation is Mandatory) {
-                        errors.getOrPut(fieldName) { mutableListOf() }.add("Mandatory field")
+                        errors.getOrPut(fieldName) { mutableListOf() }
+                            .add(error(resId = R.string.validation_mandatory))
                     }
                 } else {
                     when (annotation) {
                         is Digits -> {
                             if (isNotDigits(value)) {
                                 errors.getOrPut(fieldName) { mutableListOf() }
-                                    .add("Invalid format numeric")
+                                    .add(error(resId = R.string.validation_invalid_format))
+
                             }
                         }
 
                         is Email -> {
                             if (isNotEmail(value)) {
                                 errors.getOrPut(fieldName) { mutableListOf() }
-                                    .add("Invalid format email")
+                                    .add(error(resId = R.string.validation_invalid_format))
                             }
                         }
 
                         is Phone -> {
                             if (isNotPhone(value)) {
                                 errors.getOrPut(fieldName) { mutableListOf() }
-                                    .add("Invalid format phone")
+                                    .add(error(resId = R.string.validation_invalid_format))
                             }
                         }
 
@@ -58,11 +56,11 @@ class ValidateState<State : Any>(
                             val date = dateFrom(value.toString(), annotation.format)
                             if (date == null) {
                                 errors.getOrPut(fieldName) { mutableListOf() }
-                                    .add("Invalid format date")
+                                    .add(error(resId = R.string.validation_invalid_format))
                             } else {
                                 if (isFutureDate(date)) {
                                     errors.getOrPut(fieldName) { mutableListOf() }
-                                        .add("Invalid past date")
+                                        .add(error(resId = R.string.validation_invalid_format))
                                 }
                             }
                         }
@@ -94,6 +92,10 @@ class ValidateState<State : Any>(
         return value > LocalDate.now()
     }
 
+    private fun error(resId: Int) =
+        UiString.StringResource(
+            resId = resId
+        )
 }
 
 

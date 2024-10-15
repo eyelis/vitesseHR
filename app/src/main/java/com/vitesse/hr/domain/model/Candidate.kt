@@ -5,7 +5,6 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import kotlinx.datetime.LocalDate
 
-//TODO Use mapper
 @Entity
 data class Candidate(
     @PrimaryKey(autoGenerate = true)
@@ -14,7 +13,6 @@ data class Candidate(
     val lastName: String,
     val phoneNumber: String,
     val email: String,
-    //TODO use date
     val dateOfBirth: LocalDate,
     val expectedSalary: Long?,
     val note: String,

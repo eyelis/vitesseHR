@@ -15,6 +15,7 @@ import com.vitesse.hr.domain.usecase.GetCurrency
 import com.vitesse.hr.domain.usecase.ListAll
 import com.vitesse.hr.domain.usecase.ListFavorites
 import com.vitesse.hr.domain.usecase.UseCases
+import com.vitesse.hr.presentation.AppDispatchers
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -57,6 +58,10 @@ object AppModule {
     @Provides
     @Singleton
     fun repository(db: CandidateDatabase): CandidateRepository = CandidateRepositoryImpl(db.dao())
+
+    @Provides
+    @Singleton
+    fun appDispatchers(): AppDispatchers = AppDispatchers()
 
     @Provides
     @Singleton

@@ -1,6 +1,8 @@
 package com.vitesse.hr.presentation.list
 
 import android.annotation.SuppressLint
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -22,6 +24,7 @@ import com.vitesse.hr.domain.model.Candidate
 import com.vitesse.hr.presentation.list.component.SearchBar
 import com.vitesse.hr.presentation.list.component.TabBar
 
+@RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "StateFlowValueCalledInComposition")
 @Composable
 fun ListScreen(
@@ -29,8 +32,6 @@ fun ListScreen(
     onAddClick: () -> Unit = {},
     viewModel: ListViewModel = hiltViewModel()
 ) {
-
-
     Scaffold(
         modifier = Modifier
             .fillMaxSize(),
@@ -45,7 +46,7 @@ fun ListScreen(
             ) {
                 Icon(
                     imageVector = Icons.Filled.Add,
-                    contentDescription = stringResource(id = R.string.contentDescription_add)
+                    contentDescription = stringResource(id = R.string.content_description_add)
                 )
             }
         }

@@ -16,7 +16,7 @@ import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 
-class CandidateRepositoryTest {
+class CandidateDaoTest {
 
     private lateinit var database: CandidateDatabase
     private lateinit var dao: CandidateDao

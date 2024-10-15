@@ -47,7 +47,7 @@ fun SearchBar(
             )
         },
         placeholder = {
-            Text(stringResource(id = R.string.hint_search))
+            Text(stringResource(id = R.string.search_label))
         }
     ) {
     }

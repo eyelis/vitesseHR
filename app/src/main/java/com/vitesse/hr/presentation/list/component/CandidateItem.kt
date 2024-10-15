@@ -40,9 +40,6 @@ fun CandidateItem(
     onCandidateClick: (Candidate) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val defaultUri =
-        Uri.parse("content://media/picker/0/com.android.providers.media.photopicker/media/40");
-    // var isGrantedState by remember { mutableStateOf(false) }
 
     val imagePermissionState = rememberPermissionState(Manifest.permission.READ_MEDIA_IMAGES)
 
@@ -54,7 +51,6 @@ fun CandidateItem(
 
     Box(
         modifier = modifier
-            //.background(color = Color(0xFFF3FBFF))
             .clickable {
                 onCandidateClick(candidate)
             }
@@ -87,7 +83,6 @@ fun CandidateItem(
                     )
                 }
                 Text(
-                    //TODO 2 LINES MAX
                     candidate.note,
                     maxLines = 2
                 )

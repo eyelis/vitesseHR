@@ -1,5 +1,7 @@
 package com.vitesse.hr.presentation.list.component
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
@@ -15,6 +17,7 @@ import com.vitesse.hr.domain.model.Candidate
 import com.vitesse.hr.presentation.list.ListViewModel
 import com.vitesse.hr.presentation.list.event.ListEvent
 
+@RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
 fun TabBar(
     onCandidateClick: (Candidate) -> Unit = {},
@@ -23,7 +26,7 @@ fun TabBar(
     val state by viewModel.state.collectAsState()
 
     val tabs =
-        listOf(stringResource(id = R.string.tabAll), stringResource(id = R.string.tabFavorites))
+        listOf(stringResource(id = R.string.tab_all_label), stringResource(id = R.string.tab_favorites_label))
 
 
     TabRow(selectedTabIndex = state.activeTabIndex) {

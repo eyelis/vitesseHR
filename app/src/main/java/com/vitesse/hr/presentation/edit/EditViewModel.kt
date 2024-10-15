@@ -9,8 +9,7 @@ import com.vitesse.hr.domain.model.InvalidCandidateException
 import com.vitesse.hr.domain.usecase.UseCases
 import com.vitesse.hr.presentation.edit.event.EditEvent
 import com.vitesse.hr.presentation.edit.state.EditState
-import com.vitesse.hr.presentation.edit.validation.ValidateState
-import com.vitesse.hr.presentation.util.DateUtils.dateFrom
+import com.vitesse.hr.presentation.validation.ValidateState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -39,22 +38,18 @@ class EditViewModel @Inject constructor(
 
     private var id: Int? = null
 
-    //  private val _imageUri = MutableStateFlow<Uri?>(null)
-    //  val _imageUri = _imageUri
+    init {
+        println("init")
+        savedStateHandle.get<String>("id")?.toInt().let { id ->
+            if (id == -1) {
+                return@let
+            }
+            this.id = id
 
+            load(id!!)
 
-      init {
-          println("init")
-          savedStateHandle.get<String>("id")?.toInt().let { id ->
-              if (id == -1) {
-                  return@let
-              }
-              this.id = id
-
-              load(id!!)
-
-          }
-      }
+        }
+    }
 
     fun onEvent(event: EditEvent) = when (event) {
         is EditEvent.OnSave -> {
@@ -141,7 +136,7 @@ class EditViewModel @Inject constructor(
 
     fun updateDate(dateMillis: Long?) {
         _state.update { it.copy(dateOfBirth = toLocalDate(dateMillis)) }
-        if(dateMillis != null){
+        if (dateMillis != null) {
             _state.update {
                 it.copy(errors = _state.value.errors.minus("dateOfBirth"))
             }

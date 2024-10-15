@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.vitesse.hr.domain.usecase.UseCases
 import com.vitesse.hr.domain.util.Resource
+import com.vitesse.hr.presentation.AppDispatchers
 import com.vitesse.hr.presentation.details.event.DetailEvent
 import com.vitesse.hr.presentation.util.DateUtils.now
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -14,6 +15,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.format
 import kotlinx.datetime.yearsUntil
@@ -22,7 +24,8 @@ import javax.inject.Inject
 @HiltViewModel
 class DetailViewModel @Inject constructor(
     private val useCases: UseCases,
-    savedStateHandle: SavedStateHandle
+    private val savedStateHandle: SavedStateHandle,
+    private val appDispatchers: AppDispatchers
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(DetailState())
@@ -31,19 +34,8 @@ class DetailViewModel @Inject constructor(
     private val _eventFlow = MutableSharedFlow<UiEvent>()
     val eventFlow = _eventFlow.asSharedFlow()
 
-    private var id: Int? = null
-
     init {
-        println("init")
-        savedStateHandle.get<String>("id")?.toInt().let { id ->
-            if (id == -1) {
-                return@let
-            }
-            this.id = id
-
-            load(id!!)
-
-        }
+        load()
     }
 
     fun onEvent(event: DetailEvent) {
@@ -87,12 +79,20 @@ class DetailViewModel @Inject constructor(
         }
     }
 
-    private fun load(id: Int) {
+    private fun load() {
         viewModelScope.launch {
-            useCases.getCandidate.invoke(id)?.let { candidate ->
+            savedStateHandle.get<String>("id")?.toInt().let { id ->
+                if (id == -1) {
+                    return@let
+                }
+
+                val candidate = withContext(appDispatchers.IO) {
+                    useCases.getCandidate.invoke(id!!)
+                }
+
                 _state.update {
                     it.copy(
-                        id = candidate.id,
+                        id = candidate!!.id,
                         firstName = candidate.firstName,
                         lastName = candidate.lastName,
                         photo = candidate.photo,
@@ -107,19 +107,21 @@ class DetailViewModel @Inject constructor(
                         note = candidate.note
                     )
                 }
-                if (candidate.expectedSalary != null) {
+                if (candidate?.expectedSalary != null) {
                     convertCurrency(candidate.expectedSalary)
                 }
+
             }
         }
     }
 
     private fun convertCurrency(amount: Long) {
         viewModelScope.launch {
-            when (val rate  = useCases.getCurrency.invoke(amount)) {
-                is Resource.Error-> _state.update {
+            when (val rate = useCases.getCurrency.invoke(amount)) {
+                is Resource.Error -> _state.update {
                     it.copy(expectedSalaryGbp = rate.message!!)
                 }
+
                 is Resource.Success -> {
                     _state.update {
                         it.copy(expectedSalaryGbp = rate.data!!.toString())

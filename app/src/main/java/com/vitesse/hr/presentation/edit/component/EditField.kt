@@ -41,16 +41,13 @@ fun EditField(
 
     Row(
         modifier = modifier
-            .padding(start = 20.dp, end = 20.dp),
-
-       // horizontalArrangement = Arrangement.spacedBy(10.dp)
+            .padding(start = 20.dp, end = 20.dp)
     )
     {
         Column(
             modifier = Modifier
                 .weight(0.1f)
                 .padding(top = 10.dp)
-               // .padding(top = 10.dp, end = if (icon != null) 10.dp else 35.dp)
         ) {
             if (icon != null) {
                 Icon(
@@ -63,7 +60,6 @@ fun EditField(
         OutlinedTextField(
             modifier = Modifier
                 .weight(1f),
-            //  .weight(1f),
             minLines = lines,
             maxLines = lines,
             label = { Text(label) },
@@ -71,8 +67,7 @@ fun EditField(
             value = value,
             onValueChange = { onValueChanged(it) },
             isError = viewModel.isError(name),
-            keyboardOptions = KeyboardOptions(keyboardType = type),
-        //    visualTransformation = PasswordVisualTransformation.
+            keyboardOptions = KeyboardOptions(keyboardType = type)
         )
 
     }
@@ -83,7 +78,7 @@ fun EditField(
                 horizontalArrangement = Arrangement.Center
             ) {
                 Text(
-                    text = error,
+                    text = error.asString(),
                     color = MaterialTheme.colorScheme.error
                 )
             }

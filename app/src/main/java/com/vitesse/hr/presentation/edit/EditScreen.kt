@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -30,7 +29,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.vitesse.hr.R
 import com.vitesse.hr.presentation.edit.component.EditData
 import com.vitesse.hr.presentation.edit.event.EditEvent
@@ -48,8 +46,6 @@ fun EditScreen(
 ) {
 
     val state by viewModel.state.collectAsState()
-
-    // viewModel.load(id)
 
     val snackBarHostState = remember { SnackbarHostState() }
 
@@ -73,7 +69,7 @@ fun EditScreen(
         topBar = {
             TopAppBar(
                 title = {
-                    Text(stringResource(id = R.string.add_fragment_label))
+                    Text(stringResource(id = R.string.action_add))
                 },
                 navigationIcon = {
                     IconButton(onClick = {
@@ -81,7 +77,7 @@ fun EditScreen(
                     }) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = stringResource(id = R.string.go_back)
+                            contentDescription = stringResource(id = R.string.action_back)
                         )
                     }
                 }

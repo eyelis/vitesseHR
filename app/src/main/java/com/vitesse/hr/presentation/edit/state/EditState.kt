@@ -1,10 +1,11 @@
 package com.vitesse.hr.presentation.edit.state
 
 import android.net.Uri
-import com.vitesse.hr.presentation.edit.validation.Digits
-import com.vitesse.hr.presentation.edit.validation.Email
-import com.vitesse.hr.presentation.edit.validation.Mandatory
-import com.vitesse.hr.presentation.edit.validation.Phone
+import com.vitesse.hr.presentation.util.UiString
+import com.vitesse.hr.presentation.validation.Digits
+import com.vitesse.hr.presentation.validation.Email
+import com.vitesse.hr.presentation.validation.Mandatory
+import com.vitesse.hr.presentation.validation.Phone
 import kotlinx.datetime.LocalDate
 
 data class EditState(
@@ -37,7 +38,7 @@ data class EditState(
 
     val photo: Uri? = null,
 
-    val errors: Map<String, MutableList<String>> = emptyMap(),
+    val errors: Map<String, MutableList<UiString>> = emptyMap(),
 
     val isLoading: Boolean = true
 )

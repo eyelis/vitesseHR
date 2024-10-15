@@ -21,7 +21,6 @@ import org.mockito.Mockito
 import org.mockito.MockitoAnnotations
 
 @RunWith(Parameterized::class)
-
 class ListFavoritesTest(
     private val searchText: String,
     private val isFavorite: Boolean,
@@ -53,6 +52,7 @@ class ListFavoritesTest(
             photo = null
         )
     }
+
     @Test
     fun list_candidates_when_match() = runBlocking {
 

@@ -3,8 +3,6 @@ package com.vitesse.hr.presentation.edit.component
 import android.annotation.SuppressLint
 import android.os.Build
 import androidx.annotation.RequiresApi
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -28,22 +26,16 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.vitesse.hr.R
 import com.vitesse.hr.presentation.edit.EditViewModel
-import com.vitesse.hr.presentation.edit.state.EditState
 import com.vitesse.hr.presentation.util.PastOrPresentSelectableDates
-import kotlinx.datetime.Clock
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atStartOfDayIn
-import kotlinx.datetime.toJavaLocalDate
 import java.util.Locale
 
-//FIXME pass state instead of viewmodel
 @RequiresApi(Build.VERSION_CODES.O)
 @SuppressLint("RememberReturnType")
 @OptIn(ExperimentalMaterial3Api::class)
@@ -74,7 +66,7 @@ fun EditData(
     EditField(viewModel = viewModel,
         modifier = modifier,
         name = "firstName",
-        label = "First Name",
+        label = stringResource(id = R.string.field_first_name_label),
         value = state.firstName,
         icon = Icons.Outlined.Person,
         onValueChanged = { viewModel.updateProperty(state.copy(firstName = it)) })
@@ -82,7 +74,7 @@ fun EditData(
     EditField(viewModel = viewModel,
         modifier = modifier,
         name = "lastName",
-        label = "Last Name",
+        label = stringResource(id = R.string.field_last_name_label),
         value = state.lastName,
         icon = null,
         onValueChanged = { viewModel.updateProperty(state.copy(lastName = it)) })
@@ -91,7 +83,7 @@ fun EditData(
         viewModel = viewModel,
         modifier = modifier,
         name = "phoneNumber",
-        label = "Phone",
+        label = stringResource(id = R.string.field_phone_label),
         value = state.phoneNumber,
         icon = Icons.Outlined.Phone,
         onValueChanged = { viewModel.updateProperty(state.copy(phoneNumber = it)) },
@@ -102,7 +94,7 @@ fun EditData(
         viewModel = viewModel,
         modifier = modifier,
         name = "email",
-        label = "Email",
+        label = stringResource(id = R.string.field_email_label),
         value = state.email,
         icon = Icons.Outlined.Email,
         onValueChanged = { viewModel.updateProperty(state.copy(email = it)) },
@@ -125,7 +117,7 @@ fun EditData(
                 Text(
                     modifier = Modifier
                         .padding(start = 24.dp, end = 12.dp, top = 16.dp),
-                    text = "Sélectionner une date"
+                    text = stringResource(id = R.string.field_date_label)
                 )
             },
             headline = {
@@ -134,9 +126,9 @@ fun EditData(
                         .padding(start = 24.dp, end = 12.dp, bottom = 12.dp),
                     text = DatePickerDefaults.dateFormatter().formatDate(
                         datePickerState.selectedDateMillis,
-                        LocalConfiguration.current.locales[0]
+                        Locale.getDefault()
                     )
-                        ?: "Entrer une date",
+                        ?: stringResource(id = R.string.field_date_enter),
 
                     color = if (viewModel.isError("dateOfBirth")) MaterialTheme.colorScheme.error else Color.Unspecified
                 )
@@ -151,7 +143,7 @@ fun EditData(
         viewModel = viewModel,
         modifier = modifier,
         name = "expectedSalary",
-        label = "Expected Salary",
+        label = stringResource(id = R.string.field_expect_salary_label),
         value = state.expectedSalary,
         icon = Icons.Outlined.AttachMoney,
         onValueChanged = { viewModel.updateProperty(state.copy(expectedSalary = it)) },
@@ -161,7 +153,7 @@ fun EditData(
     EditField(viewModel = viewModel,
         modifier = modifier,
         name = "note",
-        label = "Note",
+        label = stringResource(id = R.string.field_note_label),
         value = state.note,
         icon = Icons.Outlined.Edit,
         lines = 5,

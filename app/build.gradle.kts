@@ -3,8 +3,6 @@ plugins {
     alias(libs.plugins.jetbrains.kotlin.android)
     alias(libs.plugins.compose.compiler)
     id("com.google.dagger.hilt.android")
-    //id("com.google.devtools.ksp")
-   // kotlin("kapt")
     id("kotlin-kapt")
 }
 
@@ -69,16 +67,12 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
     implementation(libs.androidx.compose.material)
-    //testImplementation(libs.junit)
-    testImplementation(libs.junit.jupiter.api)
-    testImplementation(libs.junit.jupiter.params)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
-    testImplementation(libs.kotlin.mockito.kotlin)
 
     //Room
     implementation(libs.androidx.room.ktx)
@@ -109,15 +103,21 @@ dependencies {
 
     implementation(libs.glideCompose)
 
- //   implementation(libs.datetime)
-
     // Retrofit
     implementation(libs.retrofit)
     //FIXME tech radar HOLD library
     implementation(libs.converter.gson)
     implementation(libs.okhttp)
-    testImplementation(libs.mockwebserver)
 
+    //UT
+    testImplementation(libs.junit.jupiter.api)
+    testImplementation(libs.junit.jupiter.params)
+    testImplementation(libs.kotlin.mockito.kotlin)
+    // for coroutine handling
+    testImplementation(libs.kotlinx.coroutines.test)
+    // turbine for testing the flows
+    testImplementation(libs.turbine)
+    testImplementation(libs.mockwebserver)
 }
 
 kapt {

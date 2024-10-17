@@ -11,7 +11,6 @@ import com.vitesse.hr.presentation.list.event.ListEvent
 import com.vitesse.hr.presentation.util.DateUtils
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.asFlow
-import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert
 import org.junit.Before
@@ -29,10 +28,6 @@ class ListViewModelTest {
 
     @get:Rule
     val mainCoroutineRule = MainCoroutineRule()
-
-    private val testDispatcher = AppDispatchers(
-        IO = UnconfinedTestDispatcher()
-    )
 
     private lateinit var viewModel: ListViewModel
 

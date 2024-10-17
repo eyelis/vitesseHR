@@ -36,11 +36,13 @@ fun EditPhoto(
     val photoPickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.PickVisualMedia(),
         onResult = { uri ->
-            val flags =
-                Intent.FLAG_GRANT_READ_URI_PERMISSION
-            val resolver = context.contentResolver
-            resolver.takePersistableUriPermission(uri!!, flags)
-            viewModel.updateImageUri(uri)
+            if(uri != null) {
+                val flags =
+                    Intent.FLAG_GRANT_READ_URI_PERMISSION
+                val resolver = context.contentResolver
+                resolver.takePersistableUriPermission(uri, flags)
+                viewModel.updateImageUri(uri)
+            }
         }
     )
 
@@ -60,7 +62,7 @@ fun EditPhoto(
                     photoPickerLauncher.launch(
                         PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
                     )
-                },
+                }
         )
 
     }

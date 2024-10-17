@@ -20,9 +20,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.datetime.Instant
-import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
-import kotlinx.datetime.format
 import kotlinx.datetime.toLocalDateTime
 import javax.inject.Inject
 
@@ -40,15 +38,12 @@ class EditViewModel @Inject constructor(
     private val _eventFlow = MutableSharedFlow<UiEvent>()
     val eventFlow = _eventFlow.asSharedFlow()
 
-    private var id: Int? = null
-
     init {
         load()
     }
 
     fun onEvent(event: EditEvent) = when (event) {
         is EditEvent.OnSave -> {
-            //  val stateValidator = ValidateState(EditState::class)
             val errors = stateValidator.validate(state.value)
 
             if (errors.isEmpty()) {
@@ -147,11 +142,6 @@ class EditViewModel @Inject constructor(
             }
         }
     }
-
-    fun toFormattedDate(dateMillis: Long?) =
-        toLocalDate(dateMillis)?.format(LocalDate.Format {
-            dayOfMonth(); chars("/"); monthNumber(); chars("/"); year()
-        })
 
 
     private fun toLocalDate(dateMillis: Long?) =

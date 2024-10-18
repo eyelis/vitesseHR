@@ -9,10 +9,10 @@
     <string name="tab_all_label">All</string>
     <string name="tab_favorites_label">Favorites</string>
     <string name="icon_person_description">Candidate name</string>
-    <string name="action_favorite_off">Favoris</string>
-    <string name="action_favorite_on">Favoris</string>
+    <string name="action_favorite_off">Favorites</string>
+    <string name="action_favorite_on">Favorites</string>
     <string name="action_edit">Edit</string>
-    <string name="action_delete">Supprimer</string>
+    <string name="action_delete">Delete</string>
     <string name="confirm_delete">Confirm</string>
     <string name="cancel_delete">Cancel</string>
     <string name="delete_dialog_title">Deletion</string>

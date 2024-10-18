@@ -6,6 +6,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.SearchBar
+import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -22,24 +24,35 @@ fun SearchBar(
     onSearch: (String) -> Unit,
     onActiveChange: (Boolean) -> Unit
 ) {
-    androidx.compose.material3.SearchBar(
-        query = state.searchText,
-        onQueryChange = { onQueryChange(it) },
-        onSearch = { onSearch(it) },
-        active = state.isSearching,
-        onActiveChange = { onActiveChange(it) },
+
+    SearchBar(
+        inputField = {
+            SearchBarDefaults.InputField(
+                query = state.searchText,
+                onQueryChange = { onQueryChange(it) },
+                onSearch = { onSearch(it) },
+                expanded = state.isSearching,
+                onExpandedChange = { onActiveChange(it) },
+                enabled = true,
+                placeholder = {
+                    Text(stringResource(id = R.string.search_label))
+                },
+                leadingIcon = null,
+                trailingIcon = {
+                    Icon(
+                        imageVector = Icons.Rounded.Search,
+                        contentDescription = null
+                    )
+                },
+                interactionSource = null,
+            )
+        },
+        expanded = state.isSearching,
+        onExpandedChange = { onActiveChange(it) },
         modifier = Modifier
             .fillMaxWidth()
             .padding(16.dp),
-        trailingIcon = {
-            Icon(
-                imageVector = Icons.Rounded.Search,
-                contentDescription = null
-            )
-        },
-        placeholder = {
-            Text(stringResource(id = R.string.search_label))
-        }
-    ) {
-    }
+
+        content = { }
+    )
 }

@@ -145,7 +145,7 @@ class EditViewModelTest {
                 awaitItem()
                 viewModel.updateProperty(editState)
                 awaitItem()
-                viewModel.onEvent(event = EditEvent.OnSave(editState))
+                viewModel.onEvent(event = EditEvent.OnSave)
                 awaitItem()
 
                 //then
@@ -186,7 +186,7 @@ class EditViewModelTest {
                 awaitItem()
                 viewModel.updateProperty(editState)
                 awaitItem()
-                viewModel.onEvent(event = EditEvent.OnSave(editState))
+                viewModel.onEvent(event = EditEvent.OnSave)
                 awaitItem()
 
                 //then

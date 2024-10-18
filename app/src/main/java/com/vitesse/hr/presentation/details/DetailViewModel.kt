@@ -58,7 +58,6 @@ class DetailViewModel @Inject constructor(
                 }
             }
 
-            is DetailEvent.Call -> TODO()
             is DetailEvent.Delete -> {
                 viewModelScope.launch {
                     useCases.getCandidate.invoke(_state.value.id!!)?.let { candidate ->
@@ -68,14 +67,6 @@ class DetailViewModel @Inject constructor(
                 }
 
             }
-
-            is DetailEvent.Edit -> TODO()
-            is DetailEvent.Email -> {
-
-
-            }
-
-            is DetailEvent.Sms -> TODO()
         }
     }
 

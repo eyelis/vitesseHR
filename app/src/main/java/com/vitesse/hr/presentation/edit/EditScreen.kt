@@ -90,7 +90,7 @@ fun EditScreen(
         floatingActionButton = {
             ExtendedFloatingActionButton(
                 onClick = {
-                    viewModel.onEvent(EditEvent.OnSave(state))
+                    viewModel.onEvent(EditEvent.OnSave)
                 }
             ) {
                 Text(

@@ -30,7 +30,7 @@ class GetCandidateTest {
     }
 
     @Test
-    fun get_candidate_by_candidate() = runBlocking {
+    fun `Given a candidate id, Then the repository get id is executed`() = runBlocking {
 
         //given
         val id = 1

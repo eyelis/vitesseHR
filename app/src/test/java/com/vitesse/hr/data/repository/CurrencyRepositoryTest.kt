@@ -37,37 +37,39 @@ class CurrencyRepositoryTest {
     }
 
     @Test
-    fun gbp_rate_success() = runBlocking {
-        val jsonResponse = "{\"date\": \"2024-10-08\",\"eur\": {\"gbp\": 0.83, \"usd\": 1.09}}"
+    fun `Given gbp currency is provided, When the currency API is called, Then the currency rate is retrieved`() =
+        runBlocking {
+            val jsonResponse = "{\"date\": \"2024-10-08\",\"eur\": {\"gbp\": 0.83, \"usd\": 1.09}}"
 
-        val response = MockResponse()
-            .setResponseCode(HttpURLConnection.HTTP_OK)
-            .setBody(jsonResponse)
+            val response = MockResponse()
+                .setResponseCode(HttpURLConnection.HTTP_OK)
+                .setBody(jsonResponse)
 
-        mockWebServer.enqueue(response)
+            mockWebServer.enqueue(response)
 
-        val repository = CurrencyRepositoryImpl(api)
-        val resource = repository.getRate()
+            val repository = CurrencyRepositoryImpl(api)
+            val resource = repository.getRate()
 
-        assertTrue(resource is Success)
-        assertEquals(0.83, resource.data!!.rates.quote, 0.0)
+            assertTrue(resource is Success)
+            assertEquals(0.83, resource.data!!.rates.quote, 0.0)
 
-    }
+        }
 
     @Test
-    fun gbp_rate_error() = runBlocking {
-        val jsonResponse = "{}"
+    fun `Given an empty response, When the currency API is called, Then an error message is retrieved`() =
+        runBlocking {
+            val jsonResponse = "{}"
 
-        val response = MockResponse()
-            .setResponseCode(HttpURLConnection.HTTP_NOT_FOUND)
-            .setBody(jsonResponse)
+            val response = MockResponse()
+                .setResponseCode(HttpURLConnection.HTTP_NOT_FOUND)
+                .setBody(jsonResponse)
 
-        mockWebServer.enqueue(response)
+            mockWebServer.enqueue(response)
 
-        val repository = CurrencyRepositoryImpl(api)
-        val resource = repository.getRate()
+            val repository = CurrencyRepositoryImpl(api)
+            val resource = repository.getRate()
 
-        assertTrue(resource is Resource.Error)
-        assertTrue(resource.message!!.isNotEmpty())
-    }
+            assertTrue(resource is Resource.Error)
+            assertTrue(resource.message!!.isNotEmpty())
+        }
 }

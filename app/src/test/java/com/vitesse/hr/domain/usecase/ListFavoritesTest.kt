@@ -51,21 +51,22 @@ class ListFavoritesTest(
     }
 
     @Test
-    fun list_candidates_when_match() = runBlocking {
+    fun `Given an existing favorite candidate match a search text, Then the result should contains the candidate`() =
+        runBlocking {
 
-        //given
-        Mockito.`when`(repository.all()).thenReturn(listOf(listOf(candidate)).asFlow())
+            //given
+            Mockito.`when`(repository.all()).thenReturn(listOf(listOf(candidate)).asFlow())
 
-        //when
-        val actual = useCases.invoke(searchText).first()
+            //when
+            val actual = useCases.invoke(searchText).first()
 
-        //then
-        assertEquals(expected, actual.contains(candidate))
-    }
+            //then
+            assertEquals(expected, actual.contains(candidate))
+        }
 
     companion object {
         @JvmStatic
-        @Parameterized.Parameters(name = "{index}: searchText={0}, isFavorite={1}, isFound={2}")
+        @Parameterized.Parameters(name = "{index}: Given searchText={0} And the candidate is isFavorite={1} Then the matching candidate is found={2}")
         fun data(): Collection<Array<Any>> {
             return listOf(
                 arrayOf("first", true, true),

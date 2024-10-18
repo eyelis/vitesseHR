@@ -33,11 +33,10 @@ class AddCandidateTest {
     }
 
     @Test
-    fun add_candidate() = runBlocking {
+    fun `Given a candidate, Then the repository upsert is executed`() = runBlocking {
 
         //given
         val candidate = Candidate(
-            id = 1,
             firstName = "firstName",
             lastName = "lastName",
             dateOfBirth = LocalDate.now(),

@@ -33,7 +33,7 @@ class DeleteCandidateTest {
     }
 
     @Test
-    fun delete_candidate() = runBlocking {
+    fun  `Given a candidate, Then the repository delete is executed`() = runBlocking {
 
         //given
         val candidate = Candidate(

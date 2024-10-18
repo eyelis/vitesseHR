@@ -29,37 +29,39 @@ class GetCurrencyTest {
     }
 
     @Test
-    fun convert_currency_success() = runBlocking {
+    fun `Given an amount and an existing currency rate, Then the conversion is the product of both`() =
+        runBlocking {
 
-        //given
-        val response = Success(CurrencyResponse(rates = Rates(quote = 0.888888)))
+            //given
+            val response = Success(CurrencyResponse(rates = Rates(quote = 0.888888)))
 
-        Mockito.`when`(repository.getRate()).thenReturn(response)
+            Mockito.`when`(repository.getRate()).thenReturn(response)
 
-        //when
-        val resource = useCases.invoke(2)
+            //when
+            val resource = useCases.invoke(2)
 
-        //then
-        assertEquals(1.78, resource.data!!, 0.0)
+            //then
+            assertEquals(1.78, resource.data!!, 0.0)
 
-    }
+        }
 
     @Test
-    fun convert_currency_error() = runBlocking {
+    fun `Given an amount and an currency rate error, Then the conversion is in error`() =
+        runBlocking {
 
-        //given
-        val response = Error<CurrencyResponse>("Wierd")
+            //given
+            val response = Error<CurrencyResponse>("Wierd")
 
-        Mockito.`when`(repository.getRate()).thenReturn(response)
+            Mockito.`when`(repository.getRate()).thenReturn(response)
 
-        //when
-        val resource = useCases.invoke(2)
+            //when
+            val resource = useCases.invoke(2)
 
-        //then
-        assertTrue(resource is Error)
-        assertTrue(resource.message!!.isNotEmpty())
-        assertTrue(resource.message!!.contains("Wierd"))
-    }
+            //then
+            assertTrue(resource is Error)
+            assertTrue(resource.message!!.isNotEmpty())
+            assertTrue(resource.message!!.contains("Wierd"))
+        }
 
 
 }

@@ -50,7 +50,7 @@ class ListAllTest(
         )
     }
     @Test
-    fun list_candidates_when_match() = runBlocking {
+    fun `Given an existing candidate match a search text, Then the result should contains the candidate`() = runBlocking {
 
         //given
         Mockito.`when`(repository.all()).thenReturn(listOf(listOf(candidate)).asFlow())
@@ -64,7 +64,7 @@ class ListAllTest(
 
     companion object {
         @JvmStatic
-        @Parameterized.Parameters(name = "{index}: searchText={0}, isFound={1}")
+        @Parameterized.Parameters(name = "{index}: Given searchText={0}, Then matching candidate is found={1}")
         fun data(): Collection<Array<Any>> {
             return listOf(
                 arrayOf("first", true),

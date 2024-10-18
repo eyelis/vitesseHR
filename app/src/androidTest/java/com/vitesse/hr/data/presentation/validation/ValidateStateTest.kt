@@ -30,7 +30,6 @@ class ValidateStateTest(
             expectedErrors.mapValues { it -> it.value.map { it.toString() } },
             actualErrors.mapValues { it -> it.value.map { it.toString() } }
         )
-
     }
 
     companion object {
@@ -39,7 +38,7 @@ class ValidateStateTest(
             UiString.StringResource(resId = R.string.validation_invalid_format)
 
         @JvmStatic
-        @Parameterized.Parameters(name = "{index}: entity={0}, expectedErrors={1}")
+        @Parameterized.Parameters(name = "{index}: Given entity={0}, When validated, Then expectedErrors={1}")
         fun data(): Collection<Array<Any>> {
             return listOf(
                 arrayOf(
@@ -70,7 +69,6 @@ class ValidateStateTest(
                         "phoneNumber" to listOf(INVALID_FORMAT),
                         "expectedSalary" to listOf(INVALID_FORMAT)
                     )
-
                 )
             )
         }

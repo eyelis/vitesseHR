@@ -15,6 +15,8 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -23,6 +25,7 @@ import com.vitesse.hr.R
 import com.vitesse.hr.domain.model.Candidate
 import com.vitesse.hr.presentation.list.component.SearchBar
 import com.vitesse.hr.presentation.list.component.TabBar
+import com.vitesse.hr.presentation.list.event.ListEvent
 
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "StateFlowValueCalledInComposition")
@@ -32,11 +35,18 @@ fun ListScreen(
     onAddClick: () -> Unit = {},
     viewModel: ListViewModel = hiltViewModel()
 ) {
+    val state by viewModel.state.collectAsState()
+
     Scaffold(
         modifier = Modifier
             .fillMaxSize(),
         topBar = {
-            SearchBar(viewModel)
+            SearchBar(
+                state = state,
+                onSearch = { viewModel.onEvent(ListEvent.OnSearch(it)) },
+                onQueryChange = { viewModel.onEvent(ListEvent.OnSearch(it)) },
+                onActiveChange = { viewModel.onEvent(ListEvent.OnActiveSearch(it)) }
+            )
         },
         floatingActionButton = {
             FloatingActionButton(
@@ -60,8 +70,9 @@ fun ListScreen(
                 .padding(padding)
         ) {
             TabBar(
-                viewModel = viewModel,
-                onCandidateClick = onCandidateClick
+                state = state,
+                onCandidateClick = onCandidateClick,
+                onChangeTab = { viewModel.onEvent(ListEvent.OnChangeTab(it)) }
             )
         }
     }

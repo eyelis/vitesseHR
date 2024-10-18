@@ -1,6 +1,7 @@
 package com.vitesse.hr.presentation.edit.component
 
 import android.annotation.SuppressLint
+import android.net.Uri
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Row
@@ -22,15 +23,13 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.vitesse.hr.R
-import com.vitesse.hr.presentation.edit.EditViewModel
+import com.vitesse.hr.presentation.edit.state.EditState
 import com.vitesse.hr.presentation.util.PastOrPresentSelectableDates
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atStartOfDayIn
@@ -41,10 +40,18 @@ import java.util.Locale
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EditData(
-    viewModel: EditViewModel,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    state: EditState,
+    onUpdateDate: (Long) -> Unit,
+    onUpdateFirstName: (String) -> Unit,
+    onUpdateLastName: (String) -> Unit,
+    onUpdatePhone: (String) -> Unit,
+    onUpdateEmail: (String) -> Unit,
+    onUpdateSalary: (String) -> Unit,
+    onUpdateNote: (String) -> Unit,
+    onUpdateImageUri: (Uri) -> Unit,
+    isError: (String) -> Boolean
 ) {
-    val state by viewModel.state.collectAsState()
 
     val datePickerState = rememberDatePickerState(
         initialDisplayMode = DisplayMode.Input,
@@ -56,49 +63,59 @@ fun EditData(
     )
 
     LaunchedEffect(datePickerState.selectedDateMillis) {
-        viewModel.updateDate(datePickerState.selectedDateMillis)
+        datePickerState.selectedDateMillis?.let { onUpdateDate(it) }
     }
 
     EditPhoto(
-        viewModel = viewModel, modifier = modifier
+        state = state,
+        modifier = modifier,
+        onUpdateImageUri = { onUpdateImageUri(it) }
     )
 
-    EditField(viewModel = viewModel,
+    EditField(
+        state = state,
         modifier = modifier,
         name = "firstName",
         label = stringResource(id = R.string.field_first_name_label),
         value = state.firstName,
         icon = Icons.Outlined.Person,
-        onValueChanged = { viewModel.updateProperty(state.copy(firstName = it)) })
+        onValueChanged = { onUpdateFirstName(it) },
+        isError = { isError(it) }
+    )
 
-    EditField(viewModel = viewModel,
+    EditField(
+        state = state,
         modifier = modifier,
         name = "lastName",
         label = stringResource(id = R.string.field_last_name_label),
         value = state.lastName,
         icon = null,
-        onValueChanged = { viewModel.updateProperty(state.copy(lastName = it)) })
+        onValueChanged = { onUpdateLastName(it) },
+        isError = { isError(it) }
+    )
 
     EditField(
-        viewModel = viewModel,
+        state = state,
         modifier = modifier,
         name = "phoneNumber",
         label = stringResource(id = R.string.field_phone_label),
         value = state.phoneNumber,
         icon = Icons.Outlined.Phone,
-        onValueChanged = { viewModel.updateProperty(state.copy(phoneNumber = it)) },
-        type = KeyboardType.Phone
+        onValueChanged = { onUpdatePhone(it) },
+        type = KeyboardType.Phone,
+        isError = { isError(it) }
     )
 
     EditField(
-        viewModel = viewModel,
+        state = state,
         modifier = modifier,
         name = "email",
         label = stringResource(id = R.string.field_email_label),
         value = state.email,
         icon = Icons.Outlined.Email,
-        onValueChanged = { viewModel.updateProperty(state.copy(email = it)) },
-        type = KeyboardType.Email
+        onValueChanged = { onUpdateEmail(it) },
+        type = KeyboardType.Email,
+        isError = { isError(it) }
     )
 
     Row(
@@ -130,7 +147,7 @@ fun EditData(
                     )
                         ?: stringResource(id = R.string.field_date_enter),
 
-                    color = if (viewModel.isError("dateOfBirth")) MaterialTheme.colorScheme.error else Color.Unspecified
+                    color = if (isError("dateOfBirth")) MaterialTheme.colorScheme.error else Color.Unspecified
                 )
             },
 
@@ -140,24 +157,27 @@ fun EditData(
     }
 
     EditField(
-        viewModel = viewModel,
+        state = state,
         modifier = modifier,
         name = "expectedSalary",
         label = stringResource(id = R.string.field_expect_salary_label),
         value = state.expectedSalary,
         icon = Icons.Outlined.AttachMoney,
-        onValueChanged = { viewModel.updateProperty(state.copy(expectedSalary = it)) },
-        type = KeyboardType.Number
+        onValueChanged = { onUpdateSalary(it) },
+        type = KeyboardType.Number,
+        isError = { isError(it) }
     )
 
-    EditField(viewModel = viewModel,
+    EditField(
+        state = state,
         modifier = modifier,
         name = "note",
         label = stringResource(id = R.string.field_note_label),
         value = state.note,
         icon = Icons.Outlined.Edit,
         lines = 5,
-        onValueChanged = { viewModel.updateProperty(state.copy(note = it)) }
+        onValueChanged = { onUpdateNote(it) },
+        isError = { isError(it) }
     )
 }
 

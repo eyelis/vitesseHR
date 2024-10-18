@@ -3,7 +3,6 @@ package com.vitesse.hr.domain.usecase
 import com.vitesse.hr.domain.repository.CurrencyRepository
 import com.vitesse.hr.domain.util.Resource
 import java.math.RoundingMode
-import kotlin.math.round
 
 class GetCurrency(
     private val repository: CurrencyRepository

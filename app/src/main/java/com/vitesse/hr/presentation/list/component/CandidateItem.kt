@@ -2,7 +2,6 @@ package com.vitesse.hr.presentation.list.component
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.net.Uri
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.clickable
@@ -20,7 +19,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import coil.compose.AsyncImage
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.bumptech.glide.integration.compose.placeholder
@@ -40,7 +38,6 @@ fun CandidateItem(
     onCandidateClick: (Candidate) -> Unit,
     modifier: Modifier = Modifier
 ) {
-
     val imagePermissionState = rememberPermissionState(Manifest.permission.READ_MEDIA_IMAGES)
 
     LaunchedEffect(imagePermissionState) {

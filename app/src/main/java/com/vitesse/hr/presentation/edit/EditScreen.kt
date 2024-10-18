@@ -110,8 +110,17 @@ fun EditScreen(
 
             if(id == -1 || !state.isLoading) {
                 EditData(
-                    viewModel = viewModel,
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
+                    state = state,
+                    onUpdateFirstName = {viewModel.updateProperty(state.copy(firstName = it))},
+                    onUpdateLastName = {viewModel.updateProperty(state.copy(lastName = it))},
+                    onUpdateEmail = {viewModel.updateProperty(state.copy(email = it))},
+                    onUpdateNote = {viewModel.updateProperty(state.copy(note = it))},
+                    onUpdateSalary = {viewModel.updateProperty(state.copy(expectedSalary = it))},
+                    onUpdatePhone = {viewModel.updateProperty(state.copy(phoneNumber = it))},
+                    onUpdateDate = {viewModel.updateDate(it)},
+                    onUpdateImageUri = {viewModel.updateImageUri(it)},
+                    isError = {viewModel.isError(it)}
                 )
             }
 
